@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 
 const schemaUser = new Schema({
-    userName: {
+    name: {
         type: String,
         required: true
     },
@@ -22,6 +22,7 @@ const schemaUser = new Schema({
     },
     businessId: {
         type: Schema.Types.ObjectId,
+        ref: "Business",
         required: true
     }
 
