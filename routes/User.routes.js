@@ -74,6 +74,51 @@ user.post('/create', async (req, res) => {
     }
 })
 
+//Update de Usuario
+user.put('/update/:id', async (req, res) => {
+    const { id } = req.params
+    const { name, email, password } = req.body
+    if (!name && !email && !password) {
+        return res.status(400).json({ msg: "Por favor é necessario adicionar algum dado para ser alterado !" })
+    }
+
+    try {
+        const dadosUpdate = {}
+        if (name) dadosUpdate.name = name
+        if (email) dadosUpdate.email = email
+
+        if (password) {
+            const passwordHash = await bcrypt.hash(password, 12)
+            dadosUpdate.password = passwordHash
+        }
+
+        const user = await User.findByIdAndUpdate(id, dadosUpdate)
+        if (!user) {
+            return res.status(400).json({ msg: 'Usuario não encontrado para update' })
+        }
+
+        return res.status(200).json({ msg: "Dados atualizado com sucesso !", dadosUpdate })
+    } catch (error) {
+        return res.status(500).json({ msg: "Erro no servidor tente novamente mais tarde - ROTA UPDATE USER", error: error.message })
+    }
+})
+
+//Deleção de Usuarios
+user.delete('/delete/:id', async (req, res) => {
+    const { id } = req.params
+
+    try {
+        const user = await User.findByIdAndDelete(id)
+        if (!user) {
+            return res.status(400).json({ msg: 'Usuario nao encontrado para remoção dos dados' })
+        }
+
+        return res.status(200).json({ msg: 'Usuario deletado com sucesso' })
+    } catch (error) {
+        return res.status(500).json({ msg: 'Erro na rota de DELETAR USUARIO tente novamente mais tarde', error: error.message })
+    }
+})
+
 
 
 export default user
